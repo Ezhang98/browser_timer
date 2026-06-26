@@ -213,8 +213,9 @@ button.dur:hover{border-color:var(--accent);}
       <div class="row" style="margin-top:10px;">
         <button class="btn sm" id="addInterval">+ Add interval</button>
       </div>
-      <div class="row" style="margin-top:16px;">
+      <div class="row" style="margin-top:16px;gap:20px;">
         <div><label>Repeat whole set</label><input type="number" id="repeatCount" min="1" value="1"> times</div>
+        <div><label>Start on interval</label><select id="startOn"></select></div>
       </div>
     </div>
   </section>
@@ -398,6 +399,11 @@ button.dur:hover{border-color:var(--accent);}
   <div id="fsLabel" style="font-size:28px;color:var(--accent);margin-bottom:10px;"></div>
   <div id="fsDisplay" style="font-weight:700;font-variant-numeric:tabular-nums;"></div>
   <div id="fsMeta" style="color:var(--muted);margin-top:14px;"></div>
+  <div class="row" style="justify-content:center;margin-top:26px;">
+    <button class="btn ok" id="fsStart">Start</button>
+    <button class="btn ghost" id="fsPause">Pause</button>
+    <button class="btn ghost" id="fsReset">Reset</button>
+  </div>
 </div>
 
 <script>
@@ -526,7 +532,7 @@ function renderIntervals(){
   el.querySelectorAll("[data-del]").forEach(b=>b.onclick=e=>{
     S.intervals.splice(+e.target.dataset.del,1); save(); renderIntervals(); fillSoundSelects(); setIntervalSounds(); resetTimer();
   });
-  fillSoundSelects(); setIntervalSounds();
+  fillSoundSelects(); setIntervalSounds(); renderStartOn();
 }
 function setIntervalSounds(){
   document.querySelectorAll(".interval-sound").forEach(sel=>{
@@ -729,12 +735,21 @@ document.getElementById("alarmPicker").addEventListener("click",e=>{
   if(e.target.id==="alarmPicker") document.getElementById("alarmPicker").classList.remove("show");
 });
 
-const T={running:false, idx:0, rep:0, remaining:0, tick:null};
+const T={running:false, idx:0, rep:0, remaining:0, tick:null, startIdx:0};
 function curList(){return S.intervals;}
+function renderStartOn(){
+  const sel=document.getElementById("startOn");
+  sel.innerHTML=S.intervals.map((iv,i)=>`<option value="${i}">${i+1}. ${iv.name||"Interval "+(i+1)}</option>`).join("")||"<option>—</option>";
+  if(T.startIdx>=S.intervals.length) T.startIdx=0;
+  sel.value=T.startIdx;
+}
+document.getElementById("startOn").onchange=e=>{ T.startIdx=+e.target.value||0; if(!T.running) resetTimer(); };
 function resetTimer(){
-  clearInterval(T.tick); T.running=false; T.idx=0; T.rep=0;
-  T.remaining = curList().length? curList()[0].sec : 0;
-  paintTimer(curList().length?"Ready":"No intervals");
+  clearInterval(T.tick); T.running=false; T.rep=0;
+  const len=curList().length;
+  T.idx = len ? Math.max(0,Math.min(T.startIdx,len-1)) : 0;
+  T.remaining = len? curList()[T.idx].sec : 0;
+  paintTimer(len?"Ready":"No intervals");
 }
 function paintTimer(labelOverride){
   const list=curList();
@@ -774,9 +789,13 @@ function startTimer(){
   },100);
   paintTimer();
 }
+const pauseTimer=()=>{clearInterval(T.tick);T.running=false;};
 document.getElementById("tStart").onclick=startTimer;
-document.getElementById("tPause").onclick=()=>{clearInterval(T.tick);T.running=false;};
+document.getElementById("tPause").onclick=pauseTimer;
 document.getElementById("tReset").onclick=resetTimer;
+document.getElementById("fsStart").onclick=startTimer;
+document.getElementById("fsPause").onclick=pauseTimer;
+document.getElementById("fsReset").onclick=resetTimer;
 
 /* Fullscreen */
 const fs=document.getElementById("fsOverlay");
