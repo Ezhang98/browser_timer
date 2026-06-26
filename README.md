@@ -1,12 +1,12 @@
 # ⏱ Timer Suite
 
-A single-file, offline-friendly browser app with an interval timer, saved sets, alarms, and multiple stopwatches. No server, no build step, no dependencies — just open `index.html`.
+A single-file, offline-friendly browser app with an interval timer, saved sets, alarms, and multiple stopwatches. No server, no build step, no dependencies — just open `index.html`. Built using claude cowork. 
 
 **Live demo:** https://ezhang98.github.io/browser_timer/
 
 ## Features
 
-- **Interval timer** (default tab) — add named intervals, each with its own duration (set via an H:MM:SS wheel picker you can drag, scroll, or type) and end sound, set how many times the whole set repeats, with Start/Pause/Reset, a live progress bar, and a fullscreen mode.
+- **Interval timer** (default tab) — add named intervals, each with its own duration (set via an H:MM:SS wheel picker you can drag, scroll, or type) and end sound, set how many times the whole set repeats, and pick which interval to start on. Start/Pause/Reset, a live progress bar, and a fullscreen mode with its own Start/Pause/Reset controls. The countdown also shows live in the browser tab title, so you can watch it from another tab.
 - **Sets** — save the current intervals and repeat count as a named set, then reload it anytime. Saved sets can be renamed inline, deleted, and drag-reordered.
 - **Alarms** — multiple alarms by time and label, each with its own sound and an on/off toggle; rings with a flashing card and Stop button when your clock reaches the set time. Times use a wheel picker with a 12/24-hour format option (AM/PM toggle in 12-hour mode).
 - **Stopwatches** — run several independent stopwatches at once, each with Pause, Lap, Stop, and Remove.
@@ -28,20 +28,6 @@ start index.html       # Windows
 ```
 
 Audio requires one click first (standard browser autoplay policy) — starting a timer satisfies this automatically. Alarms only fire while the page is open.
-
-## Hosting on GitHub Pages
-
-Because the whole app is one static `index.html`, GitHub Pages can serve it directly:
-
-1. Push your code to the `main` branch (already done).
-2. On GitHub, go to **Settings → Pages**.
-3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
-4. Set **Branch** to `main` and folder to `/ (root)`, then click **Save**.
-5. Wait ~1 minute. Your site goes live at:
-
-   **https://ezhang98.github.io/browser_timer/**
-
-GitHub serves `index.html` automatically as the landing page. Every time you push to `main`, the site updates. (If it 404s at first, give it a minute and hard-refresh — the first build can lag.)
 
 ## Tech
 
