@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timer Suite</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c1f24'/%3E%3Crect x='25' y='6' width='14' height='5' rx='2.5' fill='%234ea1ff'/%3E%3Cline x1='32' y1='11' x2='32' y2='16' stroke='%234ea1ff' stroke-width='4'/%3E%3Ccircle cx='32' cy='38' r='20' fill='none' stroke='%234ea1ff' stroke-width='4'/%3E%3Cline x1='48' y1='22' x2='52' y2='18' stroke='%234ea1ff' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='32' y1='38' x2='32' y2='25' stroke='%23f2f4f7' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='32' y1='38' x2='41' y2='42' stroke='%23f2f4f7' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='38' r='2.5' fill='%23ff5c5c'/%3E%3C/svg%3E">
+<style>
+/* ---------- Theme variables ---------- */
+:root{
+  --radius:12px;
+  --gap:14px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#1c1f24; --bg2:#262b32; --bg3:#2f3640; --text:#f2f4f7; --muted:#9aa6b2;
+  --accent:#4ea1ff; --accent2:#2c7be5; --border:#3a424d; --danger:#ff5c5c; --ok:#46c98b;
+}
+[data-theme="light"]{
+  --bg:#f4f6f9; --bg2:#ffffff; --bg3:#eef1f5; --text:#1c2430; --muted:#5e6b7a;
+  --accent:#2c7be5; --accent2:#1a5fc4; --border:#d6dce4; --danger:#e0413f; --ok:#1f9d63;
+}
+[data-theme="cyber"]{
+  --bg:#0a0e1a; --bg2:#0f1730; --bg3:#15224a; --text:#e6f9ff; --muted:#6fb6c9;
+  --accent:#00f0ff; --accent2:#ff2bd6; --border:#1d3a66; --danger:#ff3b6b; --ok:#27ffb0;
+}
+[data-theme="wood"]{
+  --bg:#2c1d12; --bg2:#3b2819; --bg3:#4a3322; --text:#f5e6d3; --muted:#c2a585;
+  --accent:#d99a4e; --accent2:#b9763a; --border:#5a4128; --danger:#d9583e; --ok:#9bb04e;
+}
+[data-theme="forest"]{
+  --bg:#10231a; --bg2:#173026; --bg3:#1f4032; --text:#e7f5ec; --muted:#9cc2ad;
+  --accent:#54c98a; --accent2:#2f9d66; --border:#2c5340; --danger:#e07a5f; --ok:#8ad17f;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font);
+  display:flex; flex-direction:column; min-height:100vh; transition:background .25s,color .25s;
+}
+header{
+  display:flex; align-items:center; gap:var(--gap); padding:12px 18px;
+  background:var(--bg2); border-bottom:1px solid var(--border);
+}
+header h1{font-size:18px;margin:0;letter-spacing:.5px;}
+nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+nav button{
+  background:transparent;color:var(--muted);border:1px solid transparent;
+  padding:8px 16px;border-radius:var(--radius);cursor:pointer;font-size:14px;font-family:inherit;
+}
+nav button.active{background:var(--bg3);color:var(--text);border-color:var(--border);}
+nav button:hover{color:var(--text);}
+
+main{flex:1;padding:22px;max-width:1000px;width:100%;margin:0 auto;}
+.tab{display:none;}
+.tab.active{display:block;}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px;}
+input,select{
+  background:var(--bg3);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;
+}
+input[type=number]{width:80px;}
+input[type=time]{width:130px;}
+button.btn{
+  background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:9px 16px;
+  cursor:pointer;font-size:14px;font-family:inherit;transition:filter .15s;
+}
+button.btn:hover{filter:brightness(1.1);}
+button.btn.ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
+button.btn.danger{background:var(--danger);}
+button.btn.ok{background:var(--ok);}
+button.btn.sm{padding:5px 10px;font-size:13px;}
+.muted{color:var(--muted);font-size:13px;}
+h2{font-size:16px;margin:0 0 12px;}
+h3{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600;}
+
+/* Interval timer display */
+.timer-display{
+  text-align:center;padding:30px 10px;
+}
+#tDisplay{font-variant-numeric:tabular-nums;font-weight:700;line-height:1;}
+#tLabel{font-size:20px;color:var(--accent);margin-bottom:6px;font-weight:600;}
+#tMeta{color:var(--muted);margin-top:10px;font-size:14px;}
+.interval-item{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.interval-item input.name{flex:1;min-width:90px;}
+.progress{height:6px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:18px;}
+.progress > div{height:100%;background:var(--accent);width:0;transition:width .25s linear;}
+
+/* fullscreen overlay */
+#fsOverlay{
+  position:fixed;inset:0;background:var(--bg);z-index:1000;display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+}
+#fsOverlay.show{display:flex;}
+#fsExit{position:absolute;top:20px;right:24px;}
+
+/* stopwatch */
+.sw{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+.sw .time{font-size:38px;font-variant-numeric:tabular-nums;font-weight:700;}
+.laps{margin-top:10px;max-height:140px;overflow:auto;font-size:13px;}
+.laps div{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);color:var(--muted);}
+
+.alarm-item{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.alarm-item .at{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;}
+.alarm-item.ringing{outline:2px solid var(--danger);animation:flash .7s infinite;}
+@keyframes flash{50%{outline-color:transparent;}}
+.switch{position:relative;width:44px;height:24px;}
+.switch input{display:none;}
+.slider{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--border);border-radius:24px;cursor:pointer;transition:.2s;}
+.slider::before{content:"";position:absolute;width:18px;height:18px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:.2s;}
+.switch input:checked + .slider{background:var(--accent2);}
+.switch input:checked + .slider::before{transform:translateX(20px);background:#fff;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body data-theme="dark">
+
+<header>
+  <h1>⏱ Timer Suite</h1>
+  <nav>
+    <button data-tab="interval" class="active">Interval</button>
+    <button data-tab="alarm">Alarm</button>
+    <button data-tab="stopwatch">Stopwatch</button>
+    <button data-tab="settings">Settings</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ===== INTERVAL ===== -->
+  <section class="tab active" id="interval">
+    <div class="card timer-display">
+      <div id="tLabel">Ready</div>
+      <div id="tDisplay">00:00</div>
+      <div id="tMeta">No intervals set</div>
+      <div class="progress"><div id="tProgress"></div></div>
+      <div class="row" style="justify-content:center;margin-top:20px;">
+        <button class="btn ok" id="tStart">Start</button>
+        <button class="btn ghost" id="tPause">Pause</button>
+        <button class="btn ghost" id="tReset">Reset</button>
+        <button class="btn ghost" id="tFs">⛶ Fullscreen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Intervals</h2>
+      <div id="intervalList"></div>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn sm" id="addInterval">+ Add interval</button>
+      </div>
+      <div class="row" style="margin-top:16px;">
+        <div><label>Repeat whole set</label><input type="number" id="repeatCount" min="1" value="1"> times</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ALARM ===== -->
+  <section class="tab" id="alarm">
+    <div class="card">
+      <h2>Alarms</h2>
+      <div id="alarmList"></div>
+      <div class="row" style="margin-top:12px;">
+        <input type="time" id="newAlarmTime">
+        <input type="text" id="newAlarmLabel" placeholder="Label (optional)" style="flex:1;min-width:120px;">
+        <button class="btn sm" id="addAlarm">+ Add alarm</button>
+      </div>
+      <p class="muted" style="margin-top:10px;">Alarms ring when your computer's clock reaches the set time. Keep this tab open in the browser.</p>
+    </div>
+  </section>
+
+  <!-- ===== STOPWATCH ===== -->
+  <section class="tab" id="stopwatch">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <h2 style="margin:0;">Stopwatches</h2>
+        <button class="btn sm" id="addSw">+ New stopwatch</button>
+      </div>
+    </div>
+    <div id="swList"></div>
+  </section>
+
+  <!-- ===== SETTINGS ===== -->
+  <section class="tab" id="settings">
+    <div class="card">
+      <h2>Display</h2>
+      <div class="grid2">
+        <div>
+          <label>Timer size</label>
+          <select id="setSize">
+            <option value="48">Small</option>
+            <option value="72" selected>Medium</option>
+            <option value="110">Large</option>
+            <option value="150">Huge</option>
+          </select>
+        </div>
+        <div>
+          <label>Timer font</label>
+          <select id="setFont">
+            <option value="system-ui, sans-serif">System</option>
+            <option value="'Courier New', monospace">Monospace</option>
+            <option value="Georgia, serif">Serif</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+            <option value="Impact, sans-serif">Impact</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Theme</h2>
+      <div class="row" id="themePicker">
+        <button class="btn ghost" data-theme-val="dark">Dark</button>
+        <button class="btn ghost" data-theme-val="light">Light</button>
+        <button class="btn ghost" data-theme-val="cyber">Cyber</button>
+        <button class="btn ghost" data-theme-val="wood">Wood</button>
+        <button class="btn ghost" data-theme-val="forest">Forest</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Sounds</h2>
+      <div>
+        <label>Default interval-end sound</label>
+        <select id="setDefaultSound"></select>
+        <button class="btn sm ghost" id="previewSound" style="margin-left:8px;">▶ Preview</button>
+      </div>
+      <div style="margin-top:14px;">
+        <label>Upload custom sound</label>
+        <input type="file" id="soundUpload" accept="audio/*">
+        <p class="muted" id="uploadInfo"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Usage</h2>
+      <p class="muted" id="usageStats"></p>
+      <button class="btn ghost sm danger" id="resetAll">Reset all data</button>
+    </div>
+  </section>
+</main>
+
+<div id="fsOverlay">
+  <button class="btn ghost" id="fsExit">✕ Exit</button>
+  <div id="fsLabel" style="font-size:28px;color:var(--accent);margin-bottom:10px;"></div>
+  <div id="fsDisplay" style="font-weight:700;font-variant-numeric:tabular-nums;"></div>
+  <div id="fsMeta" style="color:var(--muted);margin-top:14px;"></div>
+</div>
+
+<script>
+/* ================= Persistence ================= */
+const KEY = "timerSuiteState_v1";
+const defaults = {
+  intervals: [{name:"Work", sec:60, sound:"beep"}, {name:"Rest", sec:30, sound:"chime"}],
+  repeat: 1,
+  alarms: [],
+  theme: "dark",
+  size: "72",
+  font: "system-ui, sans-serif",
+  defaultSound: "beep",
+  customSound: null,        // dataURL
+  customSoundName: null,
+  usage: {intervalSessions:0, alarmsFired:0, swStarted:0, opened:0}
+};
+let S = load();
+function load(){
+  try{ const r = JSON.parse(localStorage.getItem(KEY)); return r ? {...structuredClone(defaults), ...r, usage:{...defaults.usage, ...(r.usage||{})}} : structuredClone(defaults);}
+  catch(e){ return structuredClone(defaults); }
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+
+/* ================= Sound engine ================= */
+let audioCtx;
+function ctx(){ audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+const TONES = {
+  beep:  [{f:880,t:0,d:.15},{f:880,t:.2,d:.15}],
+  chime: [{f:660,t:0,d:.18},{f:990,t:.18,d:.25}],
+  bell:  [{f:1320,t:0,d:.5}],
+  buzz:  [{f:160,t:0,d:.4}],
+  triad: [{f:523,t:0,d:.18},{f:659,t:.16,d:.18},{f:784,t:.32,d:.3}],
+  blip:  [{f:1200,t:0,d:.08}]
+};
+const SOUND_NAMES = {beep:"Beep",chime:"Chime",bell:"Bell",buzz:"Buzz",triad:"Triad",blip:"Blip"};
+function playSound(name){
+  if(name==="custom" && S.customSound){ const a=new Audio(S.customSound); a.play().catch(()=>{}); return; }
+  const c=ctx(); if(c.state==="suspended") c.resume();
+  const seq = TONES[name] || TONES.beep;
+  const now=c.currentTime;
+  seq.forEach(n=>{
+    const o=c.createOscillator(), g=c.createGain();
+    o.type="sine"; o.frequency.value=n.f;
+    o.connect(g); g.connect(c.destination);
+    g.gain.setValueAtTime(0,now+n.t);
+    g.gain.linearRampToValueAtTime(.35,now+n.t+.02);
+    g.gain.exponentialRampToValueAtTime(.001,now+n.t+n.d);
+    o.start(now+n.t); o.stop(now+n.t+n.d+.02);
+  });
+}
+
+/* ================= Tabs ================= */
+document.querySelectorAll("nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.getElementById(b.dataset.tab).classList.add("active");
+  };
+});
+
+/* ================= Theme & display ================= */
+function applyTheme(){ document.body.dataset.theme = S.theme; }
+function applyDisplay(){
+  const px=S.size+"px";
+  document.getElementById("tDisplay").style.fontSize=px;
+  document.getElementById("tDisplay").style.fontFamily=S.font;
+  document.getElementById("fsDisplay").style.fontSize=(parseInt(S.size)*1.6)+"px";
+  document.getElementById("fsDisplay").style.fontFamily=S.font;
+}
+
+/* ================= Sound select fill ================= */
+function fillSoundSelects(){
+  const opts = Object.keys(SOUND_NAMES).map(k=>`<option value="${k}">${SOUND_NAMES[k]}</option>`).join("")
+    + (S.customSound?`<option value="custom">Custom: ${S.customSoundName||"uploaded"}</option>`:"");
+  document.getElementById("setDefaultSound").innerHTML=opts;
+  document.getElementById("setDefaultSound").value=S.defaultSound;
+  document.querySelectorAll(".interval-sound").forEach(sel=>{
+    const v=sel.value; sel.innerHTML=opts; sel.value=v;
+  });
+}
+
+/* ================= Interval timer ================= */
+function fmt(s){
+  s=Math.max(0,Math.round(s));
+  const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60;
+  return (h?String(h).padStart(2,"0")+":":"")+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0");
+}
+function renderIntervals(){
+  const el=document.getElementById("intervalList"); el.innerHTML="";
+  S.intervals.forEach((iv,i)=>{
+    const d=document.createElement("div"); d.className="interval-item";
+    d.innerHTML=`
+      <input class="name" value="${iv.name}" data-i="${i}" data-k="name" placeholder="Name">
+      <input type="number" min="1" value="${iv.sec}" data-i="${i}" data-k="sec" title="seconds"> s
+      <select class="interval-sound" data-i="${i}"></select>
+      <button class="btn sm danger" data-del="${i}">✕</button>`;
+    el.appendChild(d);
+  });
+  el.querySelectorAll("input").forEach(inp=>inp.oninput=e=>{
+    const i=+e.target.dataset.i,k=e.target.dataset.k;
+    S.intervals[i][k]= k==="sec"? Math.max(1,+e.target.value||1) : e.target.value;
+    save(); if(!T.running) resetTimer();
+  });
+  el.querySelectorAll(".interval-sound").forEach(sel=>{
+    const i=+sel.dataset.i;
+    sel.onchange=e=>{S.intervals[i].sound=e.target.value;save();};
+  });
+  el.querySelectorAll("[data-del]").forEach(b=>b.onclick=e=>{
+    S.intervals.splice(+e.target.dataset.del,1); save(); renderIntervals(); fillSoundSelects(); setIntervalSounds(); resetTimer();
+  });
+  fillSoundSelects(); setIntervalSounds();
+}
+function setIntervalSounds(){
+  document.querySelectorAll(".interval-sound").forEach(sel=>{
+    sel.value = S.intervals[+sel.dataset.i].sound || S.defaultSound;
+  });
+}
+document.getElementById("addInterval").onclick=()=>{
+  S.intervals.push({name:"Interval "+(S.intervals.length+1), sec:30, sound:S.defaultSound});
+  save(); renderIntervals(); resetTimer();
+};
+document.getElementById("repeatCount").oninput=e=>{S.repeat=Math.max(1,+e.target.value||1);save();};
+
+const T={running:false, idx:0, rep:0, remaining:0, tick:null};
+function curList(){return S.intervals;}
+function resetTimer(){
+  clearInterval(T.tick); T.running=false; T.idx=0; T.rep=0;
+  T.remaining = curList().length? curList()[0].sec : 0;
+  paintTimer(curList().length?"Ready":"No intervals");
+}
+function paintTimer(labelOverride){
+  const list=curList();
+  const iv=list[T.idx];
+  document.getElementById("tLabel").textContent = labelOverride || (iv?iv.name:"Done");
+  document.getElementById("tDisplay").textContent = fmt(T.remaining);
+  document.getElementById("tMeta").textContent = list.length
+    ? `Interval ${T.idx+1}/${list.length} · Set ${T.rep+1}/${S.repeat}` : "No intervals set";
+  const tot=iv?iv.sec:1;
+  document.getElementById("tProgress").style.width=(iv?(1-T.remaining/tot)*100:0)+"%";
+  // mirror to fullscreen
+  document.getElementById("fsLabel").textContent=document.getElementById("tLabel").textContent;
+  document.getElementById("fsDisplay").textContent=document.getElementById("tDisplay").textContent;
+  document.getElementById("fsMeta").textContent=document.getElementById("tMeta").textContent;
+}
+function startTimer(){
+  const list=curList();
+  if(!list.length||T.running) return;
+  if(T.remaining<=0) T.remaining=list[T.idx].sec;
+  T.running=true;
+  S.usage.intervalSessions++; save(); refreshUsage();
+  if(ctx().state==="suspended") ctx().resume();
+  let last=performance.now();
+  clearInterval(T.tick);
+  T.tick=setInterval(()=>{
+    const now=performance.now(); T.remaining-=(now-last)/1000; last=now;
+    if(T.remaining<=0){
+      const finished=list[T.idx];
+      playSound(finished.sound||S.defaultSound);
+      T.idx++;
+      if(T.idx>=list.length){ T.idx=0; T.rep++;
+        if(T.rep>=S.repeat){ clearInterval(T.tick); T.running=false; T.remaining=0; paintTimer("Finished ✓"); return; }
+      }
+      T.remaining=list[T.idx].sec;
+    }
+    paintTimer();
+  },100);
+  paintTimer();
+}
+document.getElementById("tStart").onclick=startTimer;
+document.getElementById("tPause").onclick=()=>{clearInterval(T.tick);T.running=false;};
+document.getElementById("tReset").onclick=resetTimer;
+
+/* Fullscreen */
+const fs=document.getElementById("fsOverlay");
+document.getElementById("tFs").onclick=()=>{ fs.classList.add("show"); if(fs.requestFullscreen) fs.requestFullscreen().catch(()=>{}); };
+document.getElementById("fsExit").onclick=()=>{ fs.classList.remove("show"); if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); };
+document.addEventListener("fullscreenchange",()=>{ if(!document.fullscreenElement) fs.classList.remove("show"); });
+
+/* ================= Alarms ================= */
+function renderAlarms(){
+  const el=document.getElementById("alarmList"); el.innerHTML="";
+  if(!S.alarms.length){ el.innerHTML='<p class="muted">No alarms yet.</p>'; }
+  S.alarms.forEach((al,i)=>{
+    const d=document.createElement("div"); d.className="card alarm-item"; d.id="alarm-"+i;
+    d.innerHTML=`
+      <span class="at">${al.time}</span>
+      <span style="flex:1;">${al.label||""}</span>
+      <label class="switch"><input type="checkbox" ${al.on?"checked":""} data-on="${i}"><span class="slider"></span></label>
+      <button class="btn sm ghost" data-stop="${i}" style="display:none;">Stop</button>
+      <button class="btn sm danger" data-delal="${i}">✕</button>`;
+    el.appendChild(d);
+  });
+  el.querySelectorAll("[data-on]").forEach(c=>c.onchange=e=>{S.alarms[+e.target.dataset.on].on=e.target.checked;save();});
+  el.querySelectorAll("[data-delal]").forEach(b=>b.onclick=e=>{S.alarms.splice(+e.target.dataset.delal,1);save();renderAlarms();});
+  el.querySelectorAll("[data-stop]").forEach(b=>b.onclick=e=>stopAlarm(+e.target.dataset.stop));
+}
+document.getElementById("addAlarm").onclick=()=>{
+  const t=document.getElementById("newAlarmTime").value; if(!t) return;
+  S.alarms.push({time:t,label:document.getElementById("newAlarmLabel").value,on:true,fired:false});
+  document.getElementById("newAlarmLabel").value="";
+  save(); renderAlarms();
+};
+const ringing={};
+function stopAlarm(i){
+  if(ringing[i]){ clearInterval(ringing[i]); delete ringing[i]; }
+  const d=document.getElementById("alarm-"+i);
+  if(d){ d.classList.remove("ringing"); d.querySelector("[data-stop]").style.display="none"; }
+}
+function checkAlarms(){
+  const now=new Date(); const hhmm=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  S.alarms.forEach((al,i)=>{
+    if(al.on && al.time===hhmm && !al.fired){
+      al.fired=true; save();
+      S.usage.alarmsFired++; save(); refreshUsage();
+      const d=document.getElementById("alarm-"+i);
+      if(d){ d.classList.add("ringing"); d.querySelector("[data-stop]").style.display="inline-block"; }
+      playSound(S.defaultSound);
+      ringing[i]=setInterval(()=>playSound(S.defaultSound),1500);
+      setTimeout(()=>stopAlarm(i),60000);
+    }
+    if(al.time!==hhmm) al.fired=false;
+  });
+}
+setInterval(checkAlarms,1000);
+
+/* ================= Stopwatches ================= */
+let SW=[]; // {id,el,elapsed,running,start,laps[],tick}
+function addStopwatch(){
+  const id=Date.now()+Math.random();
+  const o={id,elapsed:0,running:false,start:0,laps:[],tick:null};
+  SW.push(o);
+  const d=document.createElement("div"); d.className="sw";
+  d.innerHTML=`
+    <div class="row" style="justify-content:space-between;align-items:flex-start;">
+      <div class="time">00:00.00</div>
+      <button class="btn sm danger remove">remove</button>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="btn ok start">Start</button>
+      <button class="btn ghost lap">Lap</button>
+      <button class="btn ghost stop">Stop</button>
+    </div>
+    <div class="laps"></div>`;
+  document.getElementById("swList").appendChild(d);
+  o.el=d;
+  const timeEl=d.querySelector(".time"), lapsEl=d.querySelector(".laps");
+  const fmtSw=ms=>{const t=ms/1000;const m=Math.floor(t/60),s=Math.floor(t%60),cs=Math.floor((t*100)%100);
+    return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")+"."+String(cs).padStart(2,"0");};
+  function paint(){ timeEl.textContent=fmtSw(o.elapsed + (o.running?performance.now()-o.start:0)); }
+  d.querySelector(".start").onclick=function(){
+    if(o.running){ // pause
+      o.elapsed+=performance.now()-o.start; o.running=false; clearInterval(o.tick); this.textContent="Start"; this.classList.add("ok");
+    }else{
+      o.start=performance.now(); o.running=true; this.textContent="Pause"; this.classList.remove("ok");
+      S.usage.swStarted++; save(); refreshUsage();
+      o.tick=setInterval(paint,33);
+    }
+  };
+  d.querySelector(".lap").onclick=()=>{
+    const tot=o.elapsed+(o.running?performance.now()-o.start:0);
+    o.laps.push(tot);
+    const row=document.createElement("div");
+    row.innerHTML=`<span>Lap ${o.laps.length}</span><span>${fmtSw(tot)}</span>`;
+    lapsEl.prepend(row);
+  };
+  d.querySelector(".stop").onclick=()=>{
+    o.running=false; clearInterval(o.tick); o.elapsed=0; o.laps=[]; lapsEl.innerHTML="";
+    d.querySelector(".start").textContent="Start"; d.querySelector(".start").classList.add("ok"); paint();
+  };
+  d.querySelector(".remove").onclick=()=>{ clearInterval(o.tick); d.remove(); SW=SW.filter(x=>x!==o); };
+  paint();
+}
+document.getElementById("addSw").onclick=addStopwatch;
+
+/* ================= Settings wiring ================= */
+document.getElementById("setSize").onchange=e=>{S.size=e.target.value;save();applyDisplay();};
+document.getElementById("setFont").onchange=e=>{S.font=e.target.value;save();applyDisplay();};
+document.querySelectorAll("#themePicker [data-theme-val]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.themeVal;save();applyTheme();});
+document.getElementById("setDefaultSound").onchange=e=>{S.defaultSound=e.target.value;save();};
+document.getElementById("previewSound").onclick=()=>playSound(document.getElementById("setDefaultSound").value);
+document.getElementById("soundUpload").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ S.customSound=r.result; S.customSoundName=f.name; save(); fillSoundSelects(); document.getElementById("uploadInfo").textContent="Saved: "+f.name; };
+  r.readAsDataURL(f);
+};
+document.getElementById("resetAll").onclick=()=>{
+  if(confirm("Erase all settings, intervals, alarms and usage data?")){ localStorage.removeItem(KEY); location.reload(); }
+};
+function refreshUsage(){
+  const u=S.usage;
+  document.getElementById("usageStats").innerHTML=
+    `App opened: <b>${u.opened}</b> · Interval sessions: <b>${u.intervalSessions}</b> · Alarms fired: <b>${u.alarmsFired}</b> · Stopwatches started: <b>${u.swStarted}</b>`;
+}
+
+/* ================= Init ================= */
+function initSettingsControls(){
+  document.getElementById("setSize").value=S.size;
+  document.getElementById("setFont").value=S.font;
+  document.getElementById("repeatCount").value=S.repeat;
+  if(S.customSoundName) document.getElementById("uploadInfo").textContent="Saved: "+S.customSoundName;
+}
+S.usage.opened++; save();
+applyTheme(); applyDisplay(); initSettingsControls();
+renderIntervals(); renderAlarms(); resetTimer(); refreshUsage();
+addStopwatch();
+</script>
+</body>
+</html>
