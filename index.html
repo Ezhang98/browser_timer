@@ -32,6 +32,26 @@
   --bg:#10231a; --bg2:#173026; --bg3:#1f4032; --text:#e7f5ec; --muted:#9cc2ad;
   --accent:#54c98a; --accent2:#2f9d66; --border:#2c5340; --danger:#e07a5f; --ok:#8ad17f;
 }
+[data-theme="ocean"]{
+  --bg:#0b1f2a; --bg2:#112c3a; --bg3:#173b4d; --text:#e2f4fb; --muted:#84b4c6;
+  --accent:#34d1c4; --accent2:#1d92b8; --border:#1f4a5e; --danger:#ff6b6b; --ok:#3fe0a8;
+}
+[data-theme="sunset"]{
+  --bg:#251628; --bg2:#341d38; --bg3:#48274b; --text:#ffe9e3; --muted:#c79bb0;
+  --accent:#ff8c5a; --accent2:#e0457b; --border:#5a3358; --danger:#ff4d6d; --ok:#ffb14e;
+}
+[data-theme="rose"]{
+  --bg:#fdf2f4; --bg2:#ffffff; --bg3:#fae4ea; --text:#3a2630; --muted:#9b7382;
+  --accent:#e0567f; --accent2:#c33a66; --border:#f0cdd7; --danger:#d6324f; --ok:#1f9d63;
+}
+[data-theme="midnight"]{
+  --bg:#000000; --bg2:#0b0d14; --bg3:#151823; --text:#eef0f7; --muted:#7c8190;
+  --accent:#7c5cff; --accent2:#5a3df0; --border:#23262f; --danger:#ff5c7a; --ok:#46c98b;
+}
+[data-theme="matrix"]{
+  --bg:#000800; --bg2:#021202; --bg3:#031e03; --text:#7dff7d; --muted:#3f9f3f;
+  --accent:#22ff22; --accent2:#13c413; --border:#0c3a0c; --danger:#ff5555; --ok:#39ff14;
+}
 
 *{box-sizing:border-box;}
 html,body{margin:0;height:100%;}
@@ -90,6 +110,46 @@ h3{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600;}
 .progress{height:6px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:18px;}
 .progress > div{height:100%;background:var(--accent);width:0;transition:width .25s linear;}
 
+/* duration button + time picker */
+button.dur{
+  background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:8px;
+  padding:8px 12px;font-size:15px;font-variant-numeric:tabular-nums;font-family:inherit;
+  cursor:pointer;min-width:96px;letter-spacing:.5px;
+}
+button.dur:hover{border-color:var(--accent);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:1100;}
+.modal.show{display:flex;}
+.modal-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;width:340px;max-width:92vw;}
+.modal-card h3{font-size:15px;color:var(--text);margin:0 0 4px;}
+.wheels{display:flex;gap:10px;justify-content:center;margin:16px 0 6px;}
+.wheel-col{flex:1;text-align:center;}
+.wheel-col .lab{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.wheel-wrap{position:relative;}
+.wheel{height:132px;overflow-y:auto;scroll-snap-type:y mandatory;border-radius:10px;background:var(--bg3);scrollbar-width:none;cursor:grab;touch-action:none;user-select:none;}
+.wheel.dragging{cursor:grabbing;scroll-snap-type:none;}
+.wheel::-webkit-scrollbar{display:none;}
+.wheel-list{padding:44px 0;}
+.wheel-item{height:44px;line-height:44px;text-align:center;font-size:21px;font-variant-numeric:tabular-nums;color:var(--muted);scroll-snap-align:center;transition:color .12s,transform .12s;}
+.wheel-item.sel{color:var(--text);font-weight:700;transform:scale(1.18);}
+.wheel-band{position:absolute;left:0;right:0;top:44px;height:44px;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);pointer-events:none;border-radius:4px;}
+.wheel-num{width:100%;margin-top:8px;text-align:center;}
+.wheel-colon{align-self:center;font-size:22px;font-weight:700;color:var(--muted);padding-top:18px;}
+.ampm-col{display:flex;flex-direction:column;justify-content:center;gap:8px;padding-top:18px;}
+.ampm-btn{background:var(--bg3);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;}
+.ampm-btn.on{background:var(--accent2);color:#fff;border-color:var(--accent2);}
+.theme-btn.sel{background:var(--accent2);color:#fff;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset;font-weight:700;}
+
+/* sets */
+.set-row{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.set-row.dragover{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset;}
+.set-row.dragging{opacity:.45;}
+.set-handle{cursor:grab;color:var(--muted);font-size:18px;padding:0 2px;user-select:none;}
+.set-row input.set-name{flex:1;min-width:90px;background:transparent;border:1px solid transparent;font-weight:600;}
+.set-row input.set-name:hover,.set-row input.set-name:focus{border-color:var(--border);background:var(--bg2);}
+.set-meta{color:var(--muted);font-size:12px;white-space:nowrap;}
+.alarm-item .at{cursor:pointer;}
+.alarm-item .at:hover{color:var(--accent);}
+
 /* fullscreen overlay */
 #fsOverlay{
   position:fixed;inset:0;background:var(--bg);z-index:1000;display:none;
@@ -124,6 +184,7 @@ h3{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600;}
   <h1>⏱ Timer Suite</h1>
   <nav>
     <button data-tab="interval" class="active">Interval</button>
+    <button data-tab="sets">Sets</button>
     <button data-tab="alarm">Alarm</button>
     <button data-tab="stopwatch">Stopwatch</button>
     <button data-tab="settings">Settings</button>
@@ -158,14 +219,32 @@ h3{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600;}
     </div>
   </section>
 
+  <!-- ===== SETS ===== -->
+  <section class="tab" id="sets">
+    <div class="card">
+      <h2>Save current interval set</h2>
+      <p class="muted" style="margin-top:-4px;">Saves the intervals and repeat count currently on the Interval tab.</p>
+      <div class="row" style="margin-top:10px;">
+        <input type="text" id="newSetName" placeholder="Set name (e.g. HIIT, Pomodoro)" style="flex:1;min-width:160px;">
+        <button class="btn sm" id="saveSet">＋ Save set</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Saved sets</h2>
+      <p class="muted" style="margin-top:-4px;">Drag the ⠿ handle to reorder. Click Load to send a set to the Interval tab.</p>
+      <div id="setList"></div>
+    </div>
+  </section>
+
   <!-- ===== ALARM ===== -->
   <section class="tab" id="alarm">
     <div class="card">
       <h2>Alarms</h2>
       <div id="alarmList"></div>
       <div class="row" style="margin-top:12px;">
-        <input type="time" id="newAlarmTime">
+        <button class="dur" id="newAlarmBtn">07:00 AM</button>
         <input type="text" id="newAlarmLabel" placeholder="Label (optional)" style="flex:1;min-width:120px;">
+        <select id="newAlarmSound" title="Alarm sound"></select>
         <button class="btn sm" id="addAlarm">+ Add alarm</button>
       </div>
       <p class="muted" style="margin-top:10px;">Alarms ring when your computer's clock reaches the set time. Keep this tab open in the browser.</p>
@@ -207,18 +286,31 @@ h3{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600;}
             <option value="Impact, sans-serif">Impact</option>
           </select>
         </div>
+        <div>
+          <label>Clock format (alarms)</label>
+          <select id="setHourFmt">
+            <option value="12">12-hour (AM/PM)</option>
+            <option value="24">24-hour</option>
+          </select>
+        </div>
       </div>
     </div>
 
     <div class="card">
       <h2>Theme</h2>
       <div class="row" id="themePicker">
-        <button class="btn ghost" data-theme-val="dark">Dark</button>
-        <button class="btn ghost" data-theme-val="light">Light</button>
-        <button class="btn ghost" data-theme-val="cyber">Cyber</button>
-        <button class="btn ghost" data-theme-val="wood">Wood</button>
-        <button class="btn ghost" data-theme-val="forest">Forest</button>
+        <button class="btn ghost theme-btn" data-theme-val="dark">Dark</button>
+        <button class="btn ghost theme-btn" data-theme-val="light">Light</button>
+        <button class="btn ghost theme-btn" data-theme-val="cyber">Cyber</button>
+        <button class="btn ghost theme-btn" data-theme-val="wood">Wood</button>
+        <button class="btn ghost theme-btn" data-theme-val="forest">Forest</button>
+        <button class="btn ghost theme-btn" data-theme-val="ocean">Ocean</button>
+        <button class="btn ghost theme-btn" data-theme-val="sunset">Sunset</button>
+        <button class="btn ghost theme-btn" data-theme-val="rose">Rosé</button>
+        <button class="btn ghost theme-btn" data-theme-val="midnight">Midnight</button>
+        <button class="btn ghost theme-btn" data-theme-val="matrix">Matrix</button>
       </div>
+      <p class="muted" style="margin-top:10px;">Switching a theme also sets a matching font — you can change the font above anytime after.</p>
     </div>
 
     <div class="card">
@@ -243,6 +335,64 @@ h3{font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600;}
   </section>
 </main>
 
+<div class="modal" id="timePicker">
+  <div class="modal-card">
+    <h3>Interval duration</h3>
+    <p class="muted" style="margin:0;">Scroll the wheels or type below.</p>
+    <div class="wheels">
+      <div class="wheel-col">
+        <div class="lab">Hours</div>
+        <div class="wheel-wrap"><div class="wheel" id="wheelH"></div><div class="wheel-band"></div></div>
+        <input type="number" class="wheel-num" id="numH" min="0" max="23">
+      </div>
+      <div class="wheel-colon">:</div>
+      <div class="wheel-col">
+        <div class="lab">Minutes</div>
+        <div class="wheel-wrap"><div class="wheel" id="wheelM"></div><div class="wheel-band"></div></div>
+        <input type="number" class="wheel-num" id="numM" min="0" max="59">
+      </div>
+      <div class="wheel-colon">:</div>
+      <div class="wheel-col">
+        <div class="lab">Seconds</div>
+        <div class="wheel-wrap"><div class="wheel" id="wheelS"></div><div class="wheel-band"></div></div>
+        <input type="number" class="wheel-num" id="numS" min="0" max="59">
+      </div>
+    </div>
+    <div class="row" style="justify-content:flex-end;margin-top:14px;">
+      <button class="btn ghost" id="tpCancel">Cancel</button>
+      <button class="btn ok" id="tpSet">Set</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="alarmPicker">
+  <div class="modal-card">
+    <h3>Alarm time</h3>
+    <p class="muted" style="margin:0;">Scroll the wheels or type below.</p>
+    <div class="wheels">
+      <div class="wheel-col">
+        <div class="lab">Hour</div>
+        <div class="wheel-wrap"><div class="wheel" id="wheelAH"></div><div class="wheel-band"></div></div>
+        <input type="number" class="wheel-num" id="numAH" min="0" max="23">
+      </div>
+      <div class="wheel-colon">:</div>
+      <div class="wheel-col">
+        <div class="lab">Minute</div>
+        <div class="wheel-wrap"><div class="wheel" id="wheelAM"></div><div class="wheel-band"></div></div>
+        <input type="number" class="wheel-num" id="numAM" min="0" max="59">
+      </div>
+      <div class="ampm-col" id="ampmCol">
+        <button class="ampm-btn" id="ampmAM">AM</button>
+        <button class="ampm-btn" id="ampmPM">PM</button>
+      </div>
+    </div>
+    <div class="row" style="justify-content:flex-end;margin-top:14px;">
+      <button class="btn ghost" id="apCancel">Cancel</button>
+      <button class="btn ok" id="apSet">Set</button>
+    </div>
+  </div>
+</div>
+
 <div id="fsOverlay">
   <button class="btn ghost" id="fsExit">✕ Exit</button>
   <div id="fsLabel" style="font-size:28px;color:var(--accent);margin-bottom:10px;"></div>
@@ -256,10 +406,12 @@ const KEY = "timerSuiteState_v1";
 const defaults = {
   intervals: [{name:"Work", sec:60, sound:"beep"}, {name:"Rest", sec:30, sound:"chime"}],
   repeat: 1,
+  sets: [],
   alarms: [],
   theme: "dark",
   size: "72",
   font: "system-ui, sans-serif",
+  hour12: true,
   defaultSound: "beep",
   customSound: null,        // dataURL
   customSoundName: null,
@@ -311,7 +463,16 @@ document.querySelectorAll("nav button").forEach(b=>{
 });
 
 /* ================= Theme & display ================= */
-function applyTheme(){ document.body.dataset.theme = S.theme; }
+const THEME_FONTS={
+  dark:"system-ui, sans-serif", light:"'Trebuchet MS', sans-serif",
+  cyber:"'Courier New', monospace", wood:"Georgia, serif", forest:"system-ui, sans-serif",
+  ocean:"'Trebuchet MS', sans-serif", sunset:"Georgia, serif", rose:"'Trebuchet MS', sans-serif",
+  midnight:"'Courier New', monospace", matrix:"'Courier New', monospace"
+};
+function applyTheme(){
+  document.body.dataset.theme = S.theme;
+  document.querySelectorAll(".theme-btn").forEach(b=>b.classList.toggle("sel",b.dataset.themeVal===S.theme));
+}
 function applyDisplay(){
   const px=S.size+"px";
   document.getElementById("tDisplay").style.fontSize=px;
@@ -326,8 +487,8 @@ function fillSoundSelects(){
     + (S.customSound?`<option value="custom">Custom: ${S.customSoundName||"uploaded"}</option>`:"");
   document.getElementById("setDefaultSound").innerHTML=opts;
   document.getElementById("setDefaultSound").value=S.defaultSound;
-  document.querySelectorAll(".interval-sound").forEach(sel=>{
-    const v=sel.value; sel.innerHTML=opts; sel.value=v;
+  document.querySelectorAll(".interval-sound, .alarm-sound, #newAlarmSound").forEach(sel=>{
+    const v=sel.value; sel.innerHTML=opts; sel.value=v||S.defaultSound;
   });
 }
 
@@ -343,15 +504,20 @@ function renderIntervals(){
     const d=document.createElement("div"); d.className="interval-item";
     d.innerHTML=`
       <input class="name" value="${iv.name}" data-i="${i}" data-k="name" placeholder="Name">
-      <input type="number" min="1" value="${iv.sec}" data-i="${i}" data-k="sec" title="seconds"> s
+      <button class="dur" data-dur="${i}" title="Set duration">${fmt(iv.sec)}</button>
       <select class="interval-sound" data-i="${i}"></select>
       <button class="btn sm danger" data-del="${i}">✕</button>`;
     el.appendChild(d);
   });
-  el.querySelectorAll("input").forEach(inp=>inp.oninput=e=>{
-    const i=+e.target.dataset.i,k=e.target.dataset.k;
-    S.intervals[i][k]= k==="sec"? Math.max(1,+e.target.value||1) : e.target.value;
-    save(); if(!T.running) resetTimer();
+  el.querySelectorAll("input.name").forEach(inp=>inp.oninput=e=>{
+    S.intervals[+e.target.dataset.i].name=e.target.value; save();
+    if(!T.running) resetTimer();
+  });
+  el.querySelectorAll("[data-dur]").forEach(b=>b.onclick=e=>{
+    const i=+e.currentTarget.dataset.dur;
+    openTimePicker(S.intervals[i].sec, sec=>{
+      S.intervals[i].sec=sec; save(); renderIntervals(); if(!T.running) resetTimer();
+    });
   });
   el.querySelectorAll(".interval-sound").forEach(sel=>{
     const i=+sel.dataset.i;
@@ -372,6 +538,196 @@ document.getElementById("addInterval").onclick=()=>{
   save(); renderIntervals(); resetTimer();
 };
 document.getElementById("repeatCount").oninput=e=>{S.repeat=Math.max(1,+e.target.value||1);save();};
+
+/* ================= Sets ================= */
+function setTotalSec(st){ return st.intervals.reduce((a,iv)=>a+(+iv.sec||0),0); }
+function renderSets(){
+  const el=document.getElementById("setList"); el.innerHTML="";
+  if(!S.sets.length){ el.innerHTML='<p class="muted">No saved sets yet. Build intervals on the Interval tab, then save them here.</p>'; return; }
+  S.sets.forEach((st,i)=>{
+    const n=st.intervals.length;
+    const d=document.createElement("div"); d.className="set-row"; d.draggable=true; d.dataset.i=i;
+    d.innerHTML=`
+      <span class="set-handle" title="Drag to reorder">⠿</span>
+      <input class="set-name" value="${(st.name||"Untitled").replace(/"/g,"&quot;")}" data-name="${i}">
+      <span class="set-meta">${n} interval${n!==1?"s":""} · ${fmt(setTotalSec(st))} · ×${st.repeat}</span>
+      <button class="btn sm ok" data-load="${i}">Load</button>
+      <button class="btn sm danger" data-delset="${i}">✕</button>`;
+    el.appendChild(d);
+  });
+  el.querySelectorAll("[data-name]").forEach(inp=>inp.onchange=e=>{S.sets[+e.target.dataset.name].name=e.target.value||"Untitled";save();});
+  el.querySelectorAll("[data-load]").forEach(b=>b.onclick=e=>loadSet(+e.currentTarget.dataset.load));
+  el.querySelectorAll("[data-delset]").forEach(b=>b.onclick=e=>{
+    if(confirm("Delete this set?")){ S.sets.splice(+e.currentTarget.dataset.delset,1); save(); renderSets(); }
+  });
+  wireSetDrag(el);
+}
+function loadSet(i){
+  const st=S.sets[i]; if(!st) return;
+  S.intervals=JSON.parse(JSON.stringify(st.intervals));
+  S.repeat=st.repeat||1; save();
+  document.getElementById("repeatCount").value=S.repeat;
+  renderIntervals(); resetTimer();
+  document.querySelector('nav button[data-tab="interval"]').click();
+}
+document.getElementById("saveSet").onclick=()=>{
+  if(!S.intervals.length){ alert("Add some intervals first on the Interval tab."); return; }
+  const name=(document.getElementById("newSetName").value||"").trim() || ("Set "+(S.sets.length+1));
+  S.sets.push({id:Date.now(), name, intervals:JSON.parse(JSON.stringify(S.intervals)), repeat:S.repeat});
+  document.getElementById("newSetName").value="";
+  save(); renderSets();
+};
+let setDragIdx=null;
+function wireSetDrag(el){
+  el.querySelectorAll(".set-row").forEach(row=>{
+    row.addEventListener("dragstart",e=>{ setDragIdx=+row.dataset.i; row.classList.add("dragging"); e.dataTransfer.effectAllowed="move"; });
+    row.addEventListener("dragend",()=>{ row.classList.remove("dragging"); el.querySelectorAll(".set-row").forEach(r=>r.classList.remove("dragover")); });
+    row.addEventListener("dragover",e=>{ e.preventDefault(); row.classList.add("dragover"); });
+    row.addEventListener("dragleave",()=>row.classList.remove("dragover"));
+    row.addEventListener("drop",e=>{
+      e.preventDefault(); const to=+row.dataset.i;
+      if(setDragIdx===null||setDragIdx===to){ return; }
+      const [m]=S.sets.splice(setDragIdx,1); S.sets.splice(to,0,m);
+      setDragIdx=null; save(); renderSets();
+    });
+  });
+}
+
+/* ----- wheel time picker ----- */
+const WI=44; // wheel item height (must match CSS)
+let tpCallback=null;
+function fillWheel(id,max,start=0){
+  let h="<div class='wheel-list'>";
+  for(let i=start;i<=max;i++) h+=`<div class="wheel-item">${String(i).padStart(2,"0")}</div>`;
+  document.getElementById(id).innerHTML=h+"</div>";
+}
+function wheelVal(id){ return Math.round(document.getElementById(id).scrollTop/WI); }
+function markSel(id,v){
+  document.getElementById(id).querySelectorAll(".wheel-item").forEach((it,i)=>it.classList.toggle("sel",i===v));
+}
+function setWheel(id,v){ const w=document.getElementById(id); w.scrollTop=v*WI; markSel(id,v); }
+["H","M","S"].forEach(k=>{
+  const max = k==="H"?23:59;
+  fillWheel("wheel"+k, max);
+  const w=document.getElementById("wheel"+k), num=document.getElementById("num"+k);
+  const clamp=v=>Math.max(0,Math.min(max,v));
+  let to;
+  // keep selection + number synced to whatever the scroll position is
+  w.addEventListener("scroll",()=>{
+    const v=clamp(Math.round(w.scrollTop/WI)); markSel("wheel"+k,v);
+    clearTimeout(to); to=setTimeout(()=>{num.value=v;},80);
+  });
+  // mouse wheel / trackpad: step one value per notch and snap
+  w.addEventListener("wheel",e=>{
+    e.preventDefault();
+    const v=clamp(Math.round(w.scrollTop/WI)+(e.deltaY>0?1:-1));
+    w.scrollTo({top:v*WI,behavior:"smooth"}); num.value=v;
+  },{passive:false});
+  // click / touch drag to scroll the wheel directly
+  let dragging=false,startY=0,startTop=0;
+  w.addEventListener("pointerdown",e=>{
+    dragging=true; startY=e.clientY; startTop=w.scrollTop;
+    w.classList.add("dragging"); w.setPointerCapture(e.pointerId);
+  });
+  w.addEventListener("pointermove",e=>{
+    if(!dragging) return; w.scrollTop=startTop-(e.clientY-startY);
+  });
+  const endDrag=()=>{
+    if(!dragging) return; dragging=false; w.classList.remove("dragging");
+    const v=clamp(Math.round(w.scrollTop/WI));
+    w.scrollTo({top:v*WI,behavior:"smooth"}); num.value=v;
+  };
+  w.addEventListener("pointerup",endDrag);
+  w.addEventListener("pointercancel",endDrag);
+  num.addEventListener("input",()=>{ setWheel("wheel"+k,clamp(parseInt(num.value)||0)); });
+});
+function openTimePicker(totalSec,cb){
+  tpCallback=cb;
+  const h=Math.floor(totalSec/3600), m=Math.floor(totalSec%3600/60), s=totalSec%60;
+  document.getElementById("timePicker").classList.add("show");
+  requestAnimationFrame(()=>{
+    setWheel("wheelH",h); setWheel("wheelM",m); setWheel("wheelS",s);
+    document.getElementById("numH").value=h;
+    document.getElementById("numM").value=m;
+    document.getElementById("numS").value=s;
+  });
+}
+document.getElementById("tpCancel").onclick=()=>document.getElementById("timePicker").classList.remove("show");
+document.getElementById("tpSet").onclick=()=>{
+  const total=wheelVal("wheelH")*3600+wheelVal("wheelM")*60+wheelVal("wheelS");
+  document.getElementById("timePicker").classList.remove("show");
+  if(tpCallback) tpCallback(Math.max(1,total));
+};
+document.getElementById("timePicker").addEventListener("click",e=>{
+  if(e.target.id==="timePicker") document.getElementById("timePicker").classList.remove("show");
+});
+
+/* ----- alarm clock-time picker (shares wheel UI) ----- */
+function wireWheelDyn(wheelId,numId,rangeFn){
+  const w=document.getElementById(wheelId), num=document.getElementById(numId);
+  const lastIdx=()=>{const r=rangeFn();return r.max-r.start;};
+  const start=()=>rangeFn().start;
+  const cl=i=>Math.max(0,Math.min(lastIdx(),i));
+  let to;
+  w.addEventListener("scroll",()=>{const i=cl(Math.round(w.scrollTop/WI));markSel(wheelId,i);clearTimeout(to);to=setTimeout(()=>{num.value=i+start();},80);});
+  w.addEventListener("wheel",e=>{e.preventDefault();const i=cl(Math.round(w.scrollTop/WI)+(e.deltaY>0?1:-1));w.scrollTo({top:i*WI,behavior:"smooth"});num.value=i+start();},{passive:false});
+  let dragging=false,sy=0,st=0;
+  w.addEventListener("pointerdown",e=>{dragging=true;sy=e.clientY;st=w.scrollTop;w.classList.add("dragging");w.setPointerCapture(e.pointerId);});
+  w.addEventListener("pointermove",e=>{if(!dragging)return;w.scrollTop=st-(e.clientY-sy);});
+  const end=()=>{if(!dragging)return;dragging=false;w.classList.remove("dragging");const i=cl(Math.round(w.scrollTop/WI));w.scrollTo({top:i*WI,behavior:"smooth"});num.value=i+start();};
+  w.addEventListener("pointerup",end);w.addEventListener("pointercancel",end);
+  num.addEventListener("input",()=>{setWheel(wheelId,cl((parseInt(num.value)||start())-start()));});
+}
+function buildAlarmHourWheel(){ S.hour12 ? fillWheel("wheelAH",12,1) : fillWheel("wheelAH",23,0); }
+fillWheel("wheelAM",59);
+buildAlarmHourWheel();
+wireWheelDyn("wheelAH","numAH",()=>S.hour12?{start:1,max:12}:{start:0,max:23});
+wireWheelDyn("wheelAM","numAM",()=>({start:0,max:59}));
+
+let apCallback=null, apAmpm="AM";
+function setAmpmUI(v){
+  apAmpm=v;
+  document.getElementById("ampmAM").classList.toggle("on",v==="AM");
+  document.getElementById("ampmPM").classList.toggle("on",v==="PM");
+}
+document.getElementById("ampmAM").onclick=()=>setAmpmUI("AM");
+document.getElementById("ampmPM").onclick=()=>setAmpmUI("PM");
+
+function fmtClock(t){
+  let [H,M]=t.split(":").map(Number); const mm=String(M).padStart(2,"0");
+  if(S.hour12){ const ap=H>=12?"PM":"AM"; let h=H%12; if(h===0) h=12; return String(h).padStart(2,"0")+":"+mm+" "+ap; }
+  return String(H).padStart(2,"0")+":"+mm;
+}
+function openAlarmPicker(time24,cb){
+  apCallback=cb;
+  buildAlarmHourWheel();
+  let [H,M]=time24.split(":").map(Number);
+  let dispH=H, ampm="AM";
+  if(S.hour12){ ampm=H>=12?"PM":"AM"; dispH=H%12; if(dispH===0) dispH=12; }
+  setAmpmUI(ampm);
+  document.getElementById("ampmCol").style.display = S.hour12?"flex":"none";
+  document.getElementById("alarmPicker").classList.add("show");
+  const start = S.hour12?1:0;
+  requestAnimationFrame(()=>{
+    setWheel("wheelAH",dispH-start); document.getElementById("numAH").value=dispH;
+    setWheel("wheelAM",M); document.getElementById("numAM").value=M;
+  });
+}
+function readAlarmPicker(){
+  const start=S.hour12?1:0;
+  let h=wheelVal("wheelAH")+start, m=wheelVal("wheelAM");
+  if(S.hour12){ h = apAmpm==="PM" ? (h===12?12:h+12) : (h===12?0:h); }
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+}
+document.getElementById("apCancel").onclick=()=>document.getElementById("alarmPicker").classList.remove("show");
+document.getElementById("apSet").onclick=()=>{
+  const t=readAlarmPicker();
+  document.getElementById("alarmPicker").classList.remove("show");
+  if(apCallback) apCallback(t);
+};
+document.getElementById("alarmPicker").addEventListener("click",e=>{
+  if(e.target.id==="alarmPicker") document.getElementById("alarmPicker").classList.remove("show");
+});
 
 const T={running:false, idx:0, rep:0, remaining:0, tick:null};
 function curList(){return S.intervals;}
@@ -435,8 +791,10 @@ function renderAlarms(){
   S.alarms.forEach((al,i)=>{
     const d=document.createElement("div"); d.className="card alarm-item"; d.id="alarm-"+i;
     d.innerHTML=`
-      <span class="at">${al.time}</span>
+      <span class="at" data-edit="${i}" title="Click to change time">${fmtClock(al.time)}</span>
       <span style="flex:1;">${al.label||""}</span>
+      <select class="alarm-sound" data-snd="${i}" title="Alarm sound"></select>
+      <button class="btn sm ghost" data-preval="${i}" title="Preview sound">▶</button>
       <label class="switch"><input type="checkbox" ${al.on?"checked":""} data-on="${i}"><span class="slider"></span></label>
       <button class="btn sm ghost" data-stop="${i}" style="display:none;">Stop</button>
       <button class="btn sm danger" data-delal="${i}">✕</button>`;
@@ -445,10 +803,23 @@ function renderAlarms(){
   el.querySelectorAll("[data-on]").forEach(c=>c.onchange=e=>{S.alarms[+e.target.dataset.on].on=e.target.checked;save();});
   el.querySelectorAll("[data-delal]").forEach(b=>b.onclick=e=>{S.alarms.splice(+e.target.dataset.delal,1);save();renderAlarms();});
   el.querySelectorAll("[data-stop]").forEach(b=>b.onclick=e=>stopAlarm(+e.target.dataset.stop));
+  el.querySelectorAll("[data-edit]").forEach(s=>s.onclick=e=>{
+    const i=+e.target.dataset.edit;
+    openAlarmPicker(S.alarms[i].time, t=>{ S.alarms[i].time=t; S.alarms[i].fired=false; save(); renderAlarms(); });
+  });
+  el.querySelectorAll("[data-preval]").forEach(b=>b.onclick=e=>playSound(S.alarms[+e.currentTarget.dataset.preval].sound||S.defaultSound));
+  fillSoundSelects();
+  el.querySelectorAll(".alarm-sound").forEach(sel=>{
+    const i=+sel.dataset.snd; sel.value=S.alarms[i].sound||S.defaultSound;
+    sel.onchange=e=>{S.alarms[i].sound=e.target.value;save();};
+  });
 }
+let newAlarmValue="07:00";
+document.getElementById("newAlarmBtn").onclick=()=>openAlarmPicker(newAlarmValue, t=>{
+  newAlarmValue=t; document.getElementById("newAlarmBtn").textContent=fmtClock(t);
+});
 document.getElementById("addAlarm").onclick=()=>{
-  const t=document.getElementById("newAlarmTime").value; if(!t) return;
-  S.alarms.push({time:t,label:document.getElementById("newAlarmLabel").value,on:true,fired:false});
+  S.alarms.push({time:newAlarmValue,label:document.getElementById("newAlarmLabel").value,sound:document.getElementById("newAlarmSound").value||S.defaultSound,on:true,fired:false});
   document.getElementById("newAlarmLabel").value="";
   save(); renderAlarms();
 };
@@ -466,8 +837,9 @@ function checkAlarms(){
       S.usage.alarmsFired++; save(); refreshUsage();
       const d=document.getElementById("alarm-"+i);
       if(d){ d.classList.add("ringing"); d.querySelector("[data-stop]").style.display="inline-block"; }
-      playSound(S.defaultSound);
-      ringing[i]=setInterval(()=>playSound(S.defaultSound),1500);
+      const snd=al.sound||S.defaultSound;
+      playSound(snd);
+      ringing[i]=setInterval(()=>playSound(snd),1500);
       setTimeout(()=>stopAlarm(i),60000);
     }
     if(al.time!==hhmm) al.fired=false;
@@ -527,7 +899,16 @@ document.getElementById("addSw").onclick=addStopwatch;
 /* ================= Settings wiring ================= */
 document.getElementById("setSize").onchange=e=>{S.size=e.target.value;save();applyDisplay();};
 document.getElementById("setFont").onchange=e=>{S.font=e.target.value;save();applyDisplay();};
-document.querySelectorAll("#themePicker [data-theme-val]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.themeVal;save();applyTheme();});
+document.getElementById("setHourFmt").onchange=e=>{
+  S.hour12=(e.target.value==="12"); save(); renderAlarms();
+  document.getElementById("newAlarmBtn").textContent=fmtClock(newAlarmValue);
+};
+document.querySelectorAll("#themePicker [data-theme-val]").forEach(b=>b.onclick=()=>{
+  S.theme=b.dataset.themeVal;
+  S.font=THEME_FONTS[S.theme]||S.font;           // theme sets a matching font...
+  document.getElementById("setFont").value=S.font; // ...reflected in the dropdown, still user-changeable
+  save(); applyTheme(); applyDisplay();
+});
 document.getElementById("setDefaultSound").onchange=e=>{S.defaultSound=e.target.value;save();};
 document.getElementById("previewSound").onclick=()=>playSound(document.getElementById("setDefaultSound").value);
 document.getElementById("soundUpload").onchange=e=>{
@@ -550,11 +931,13 @@ function initSettingsControls(){
   document.getElementById("setSize").value=S.size;
   document.getElementById("setFont").value=S.font;
   document.getElementById("repeatCount").value=S.repeat;
+  document.getElementById("setHourFmt").value=S.hour12?"12":"24";
+  document.getElementById("newAlarmBtn").textContent=fmtClock(newAlarmValue);
   if(S.customSoundName) document.getElementById("uploadInfo").textContent="Saved: "+S.customSoundName;
 }
 S.usage.opened++; save();
 applyTheme(); applyDisplay(); initSettingsControls();
-renderIntervals(); renderAlarms(); resetTimer(); refreshUsage();
+renderIntervals(); renderAlarms(); renderSets(); resetTimer(); refreshUsage();
 addStopwatch();
 </script>
 </body>

@@ -1,16 +1,18 @@
 # ⏱ Timer Suite
 
-A single-file, offline-friendly browser app with an interval timer, alarms, and multiple stopwatches. No server, no build step, no dependencies — just open `index.html`.
+A single-file, offline-friendly browser app with an interval timer, saved sets, alarms, and multiple stopwatches. No server, no build step, no dependencies — just open `index.html`.
 
 **Live demo:** https://ezhang98.github.io/browser_timer/
 
 ## Features
 
-- **Interval timer** (default tab) — add named intervals, each with its own duration and end sound, set how many times the whole set repeats, with Start/Pause/Reset, a live progress bar, and a fullscreen mode.
-- **Alarms** — multiple alarms by time and label, each with an on/off toggle; rings with a flashing card and Stop button when your clock reaches the set time.
+- **Interval timer** (default tab) — add named intervals, each with its own duration (set via an H:MM:SS wheel picker you can drag, scroll, or type) and end sound, set how many times the whole set repeats, with Start/Pause/Reset, a live progress bar, and a fullscreen mode.
+- **Sets** — save the current intervals and repeat count as a named set, then reload it anytime. Saved sets can be renamed inline, deleted, and drag-reordered.
+- **Alarms** — multiple alarms by time and label, each with its own sound and an on/off toggle; rings with a flashing card and Stop button when your clock reaches the set time. Times use a wheel picker with a 12/24-hour format option (AM/PM toggle in 12-hour mode).
 - **Stopwatches** — run several independent stopwatches at once, each with Pause, Lap, Stop, and Remove.
-- **Settings** — timer size and font, five themes (Dark, Light, Cyber, Wood, Forest), built-in synthesized sounds plus custom audio upload, and usage stats.
-- **Persistent** — all settings, intervals, alarms, and the custom sound are saved in `localStorage`, so they survive closing and reopening the page.
+- **Themes & fonts** — ten themes (Dark, Light, Cyber, Wood, Forest, Ocean, Sunset, Rosé, Midnight, Matrix) with the active one highlighted. Switching a theme also applies a matching font, which you can override anytime.
+- **Settings** — timer size and font, clock format, themes, built-in synthesized sounds plus custom audio upload, and usage stats.
+- **Persistent** — all settings, intervals, saved sets, alarms, and the custom sound are saved in `localStorage`, so they survive closing and reopening the page.
 
 ## Usage
 
