@@ -735,7 +735,13 @@ document.getElementById("alarmPicker").addEventListener("click",e=>{
   if(e.target.id==="alarmPicker") document.getElementById("alarmPicker").classList.remove("show");
 });
 
-const T={running:false, idx:0, rep:0, remaining:0, tick:null, startIdx:0};
+const T={running:false, active:false, idx:0, rep:0, remaining:0, tick:null, startIdx:0};
+function updateTitle(label){
+  const iv=curList()[T.idx];
+  if(T.active){ document.title=(T.running?"⏱ ":"⏸ ")+fmt(T.remaining)+(iv?" · "+iv.name:""); }
+  else if(label && label.indexOf("Finished")>=0){ document.title="✓ Finished"; }
+  else document.title="Timer Suite";
+}
 function curList(){return S.intervals;}
 function renderStartOn(){
   const sel=document.getElementById("startOn");
@@ -745,7 +751,7 @@ function renderStartOn(){
 }
 document.getElementById("startOn").onchange=e=>{ T.startIdx=+e.target.value||0; if(!T.running) resetTimer(); };
 function resetTimer(){
-  clearInterval(T.tick); T.running=false; T.rep=0;
+  clearInterval(T.tick); T.running=false; T.active=false; T.rep=0;
   const len=curList().length;
   T.idx = len ? Math.max(0,Math.min(T.startIdx,len-1)) : 0;
   T.remaining = len? curList()[T.idx].sec : 0;
@@ -764,12 +770,13 @@ function paintTimer(labelOverride){
   document.getElementById("fsLabel").textContent=document.getElementById("tLabel").textContent;
   document.getElementById("fsDisplay").textContent=document.getElementById("tDisplay").textContent;
   document.getElementById("fsMeta").textContent=document.getElementById("tMeta").textContent;
+  updateTitle(labelOverride);
 }
 function startTimer(){
   const list=curList();
   if(!list.length||T.running) return;
   if(T.remaining<=0) T.remaining=list[T.idx].sec;
-  T.running=true;
+  T.running=true; T.active=true;
   S.usage.intervalSessions++; save(); refreshUsage();
   if(ctx().state==="suspended") ctx().resume();
   let last=performance.now();
@@ -781,7 +788,7 @@ function startTimer(){
       playSound(finished.sound||S.defaultSound);
       T.idx++;
       if(T.idx>=list.length){ T.idx=0; T.rep++;
-        if(T.rep>=S.repeat){ clearInterval(T.tick); T.running=false; T.remaining=0; paintTimer("Finished ✓"); return; }
+        if(T.rep>=S.repeat){ clearInterval(T.tick); T.running=false; T.active=false; T.remaining=0; paintTimer("Finished ✓"); return; }
       }
       T.remaining=list[T.idx].sec;
     }
@@ -789,7 +796,7 @@ function startTimer(){
   },100);
   paintTimer();
 }
-const pauseTimer=()=>{clearInterval(T.tick);T.running=false;};
+const pauseTimer=()=>{clearInterval(T.tick);T.running=false;paintTimer();};
 document.getElementById("tStart").onclick=startTimer;
 document.getElementById("tPause").onclick=pauseTimer;
 document.getElementById("tReset").onclick=resetTimer;
